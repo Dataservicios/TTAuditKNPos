@@ -7,8 +7,8 @@ android {
         applicationId "com.dataservicios.ttauditknpos"
         minSdkVersion 19
         targetSdkVersion 25
-        versionCode 1
-        versionName "1.0"
+        versionCode 2
+        versionName "1.0.1"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
@@ -18,6 +18,9 @@ android {
         }
     }
     useLibrary 'org.apache.http.legacy'
+    lintOptions{
+        disable "ResourceType"
+    }
 }
 
 dependencies {

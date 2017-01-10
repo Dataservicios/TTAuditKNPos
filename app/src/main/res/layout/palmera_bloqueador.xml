@@ -1,0 +1,242 @@
+<ScrollView
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/scrollView"
+    tool:contetext=".Encuesta"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tool="http://schemas.android.com/tools">
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:padding="20dp"
+        android:weightSum="1"
+        android:focusable="true"
+        android:focusableInTouchMode="true">
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:id="@+id/lyControles">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="¿ Cliente vende Bloqueador en Sachet ?"
+                android:id="@+id/tvPregunta" />
+        </LinearLayout>
+
+
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:padding="5dp">
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp">
+
+
+                <Switch
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/tvSeEncuentra"
+                    android:layout_marginTop="1dip"
+                    android:layout_toRightOf="@+id/thumbnail"
+                    android:id="@+id/swSiNo"
+                    android:text=""
+                    android:checked="true"
+                    android:textOn="@string/sw_si"
+                    android:textOff="@string/sw_no"
+                    />
+
+
+            </LinearLayout>
+        </LinearLayout>
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:padding="5dp"
+            android:visibility="visible"
+            android:id="@+id/lyOpcionesSi">
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp">
+
+                <LinearLayout
+                    android:orientation="horizontal"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="5dp"
+                    >
+
+                    <RadioGroup
+                        android:id="@+id/rgOptSi"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:layout_alignParentLeft="true"
+                        android:layout_above="@+id/fbplacename"
+                        android:visibility="visible"
+                        android:clickable="true">
+
+                        <RadioButton
+                            android:id="@+id/rbASi"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:tag="a"
+                            android:text="Bahía" />
+                        <RadioButton
+                            android:id="@+id/rbBSi"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:tag="f"
+                            android:text="Dermosol" />
+
+                        <RadioButton
+                            android:id="@+id/rbCSi"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:tag="g"
+                            android:text="Palmera" />
+
+                        <RadioButton
+                            android:id="@+id/rbDSi"
+                            android:layout_width="wrap_content"
+                            android:tag="e"
+                            android:layout_height="wrap_content"
+                            android:text="Otros" />
+
+                        <EditText
+                            android:layout_width="fill_parent"
+                            android:layout_height="40dp"
+                            android:inputType="textMultiLine"
+                            android:ems="10"
+                            android:enabled="true"
+                            android:visibility="invisible"
+                            style="@style/TextLogin"
+                            android:lines="10"
+                            android:scrollHorizontally="false"
+                            android:scrollbars="vertical"
+                            android:textSize="15sp"
+                            android:id="@+id/etComentSi" />
+                    </RadioGroup>
+                </LinearLayout>
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:padding="5dp"
+            android:visibility="invisible"
+            android:id="@+id/lyOpcionesNo">
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp">
+
+                <LinearLayout
+                    android:orientation="horizontal"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="5dp"
+                    android:id="@+id/lyAuditoria">
+
+                    <RadioGroup
+                        android:id="@+id/rgOptNo"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:layout_alignParentLeft="true"
+                        android:layout_above="@+id/fbplacename"
+
+                        android:clickable="true">
+
+                        <RadioButton
+                            android:id="@+id/rbANo"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:tag="b"
+                            android:text="Nadie le ofrece" />
+
+                        <RadioButton
+                            android:id="@+id/rbBNo"
+                            android:layout_width="wrap_content"
+                            android:tag="c"
+                            android:layout_height="wrap_content"
+                            android:text="No vende Categoría"
+                            android:enabled="true" />
+
+                        <RadioButton
+                            android:id="@+id/rbCNo"
+                            android:layout_width="wrap_content"
+                            android:tag="d"
+                            android:layout_height="wrap_content"
+                            android:text="Solo vende en verano"
+                            android:enabled="true" />
+
+
+                        <RadioButton
+                            android:id="@+id/rbDNo"
+                            android:layout_width="wrap_content"
+                            android:tag="e"
+                            android:layout_height="wrap_content"
+                            android:text="Otros" />
+
+                        <EditText
+                            android:layout_width="fill_parent"
+                            android:layout_height="40dp"
+                            android:inputType="textMultiLine"
+                            android:ems="10"
+                            android:enabled="true"
+                            android:visibility="invisible"
+                            style="@style/TextLogin"
+                            android:lines="10"
+                            android:scrollHorizontally="false"
+                            android:scrollbars="vertical"
+                            android:textSize="15sp"
+                            android:id="@+id/etComentNo" />
+                    </RadioGroup>
+                </LinearLayout>
+            </LinearLayout>
+
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="fill_parent"
+            android:layout_height="56dp">
+
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="GUARDAR ENCUESTA"
+                android:id="@+id/btSave"
+                android:drawableRight="@drawable/ic_sync"
+                style="@style/BottonBase" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+
+
+</ScrollView>
+
+
+

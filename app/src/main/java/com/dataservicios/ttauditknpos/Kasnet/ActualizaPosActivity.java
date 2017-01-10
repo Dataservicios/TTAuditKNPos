@@ -7,7 +7,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
-
+import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -17,40 +17,31 @@ import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Switch;
-
 import android.widget.Toast;
 
 import com.dataservicios.ttauditknpos.AndroidCustomGalleryActivity;
-
 import com.dataservicios.ttauditknpos.MainActivity;
 import com.dataservicios.ttauditknpos.Model.Audit;
 import com.dataservicios.ttauditknpos.Model.PollDetail;
 import com.dataservicios.ttauditknpos.R;
 import com.dataservicios.ttauditknpos.SQLite.DatabaseHelper;
-
 import com.dataservicios.ttauditknpos.util.AuditUtil;
 import com.dataservicios.ttauditknpos.util.GPSTracker;
 import com.dataservicios.ttauditknpos.util.GlobalConstant;
-
 import com.dataservicios.ttauditknpos.util.SessionManager;
-
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 
+public class ActualizaPosActivity extends Activity {
 
-
-/**
- * Created by Jaime on 19/03/2016.
- */
-public class StoreOpenClose extends Activity {
     private Activity MyActivity = this ;
-    private static final String LOG_TAG = StoreOpenClose.class.getSimpleName();
+    private static final String LOG_TAG = ActualizaPosActivity.class.getSimpleName();
     private SessionManager session;
 
     private Switch swSiNo ;
-    private Button bt_photo, bt_guardar;
+    private Button  bt_guardar;
     private EditText etComent;
 
 
@@ -75,9 +66,9 @@ public class StoreOpenClose extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.store_open_close);
+        setContentView(R.layout.activity_actualiza_pos);
         getActionBar().setDisplayHomeAsUpEnabled(true);
-        getActionBar().setTitle("Tienda");
+        getActionBar().setTitle("Pos");
 
         swSiNo = (Switch) findViewById(R.id.swSiNo);
 
@@ -91,7 +82,7 @@ public class StoreOpenClose extends Activity {
         gpsTracker = new GPSTracker(MyActivity);
 
         bt_guardar = (Button) findViewById(R.id.btGuardar);
-        bt_photo = (Button) findViewById(R.id.btPhoto);
+
         lyOpciones = (LinearLayout) findViewById(R.id.lyOpciones);
         etComent = (EditText) findViewById(R.id.etComent);
 
@@ -101,7 +92,7 @@ public class StoreOpenClose extends Activity {
         road_id = bundle.getInt("road_id");
         audit_id = bundle.getInt("audit_id");
 
-        poll_id = GlobalConstant.poll_id[0];
+        poll_id = GlobalConstant.poll_id[1];
 
         pDialog = new ProgressDialog(MyActivity);
         pDialog.setMessage("Cargando...");
@@ -112,11 +103,14 @@ public class StoreOpenClose extends Activity {
         // id
         user_id = Integer.valueOf(user.get(SessionManager.KEY_ID_USER)) ;
 
+
+
+
         rgOpt.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
 
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
-                if(radioButton1Array[2].isChecked())
+                if(radioButton1Array[1].isChecked())
                 {
                     etComent.setEnabled(true);
                     etComent.setVisibility(View.VISIBLE);
@@ -139,6 +133,7 @@ public class StoreOpenClose extends Activity {
                 if (isChecked) {
 
                     is_sino = 1;
+                    //clearRadioButtonCheck(radioButton2Array, false);
                     rgOpt.clearCheck();
                     lyOpciones.setVisibility(View.INVISIBLE);
 
@@ -146,38 +141,34 @@ public class StoreOpenClose extends Activity {
                 } else {
 
                     is_sino = 0;
+                    //clearRadioButtonCheck(radioButton2Array, false);
                     lyOpciones.setVisibility(View.VISIBLE);
                     rgOpt.clearCheck();
                 }
             }
         });
 
-        bt_photo.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                takePhoto();
-            }
-        });
+
 
         bt_guardar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
 
-                    if(!swSiNo.isChecked()){
+                if(!swSiNo.isChecked()){
 
-                        long id2 = rgOpt.getCheckedRadioButtonId();
-                        if (id2 == -1){
-                            Toast.makeText(MyActivity,"Seleccione una opción" , Toast.LENGTH_LONG).show();
-                            return;
-                        }
-                        else{
-                            for (int x = 0; x < radioButton1Array.length; x++) {
-                                if(id2 ==  radioButton1Array[x].getId())  opt = poll_id.toString() + radioButton1Array[x].getTag();
-                            }
-
-                        }
+                    long id2 = rgOpt.getCheckedRadioButtonId();
+                    if (id2 == -1){
+                        Toast.makeText(MyActivity,"Seleccione una opción" , Toast.LENGTH_LONG).show();
+                        return;
                     }
+                    else{
+                        for (int x = 0; x < radioButton1Array.length; x++) {
+                            if(id2 ==  radioButton1Array[x].getId())  opt = poll_id.toString() + radioButton1Array[x].getTag();
+                        }
+
+                    }
+                }
 
 
                 AlertDialog.Builder builder = new AlertDialog.Builder(MyActivity);
@@ -297,18 +288,18 @@ public class StoreOpenClose extends Activity {
             if (result){
                 // loadLoginActivity();
                 if(is_sino==1) {
-                        Bundle argRuta = new Bundle();
-                        argRuta.clear();
-                        argRuta.putInt("store_id", store_id);
-                        argRuta.putInt("audit_id", audit_id);
-                        argRuta.putInt("road_id", road_id);
+                    Bundle argRuta = new Bundle();
+                    argRuta.clear();
+                    argRuta.putInt("store_id", store_id);
+                    argRuta.putInt("audit_id", audit_id);
+                    argRuta.putInt("road_id", road_id);
 
-                        Intent intent;
 
-                        intent = new Intent(MyActivity, ActualizaPosActivity.class);
-                        intent.putExtras(argRuta);
-                        startActivity(intent);
-                        finish();
+                    Intent intent;
+                    intent = new Intent(MyActivity, FotoVoucherInicioActivity.class);
+                    intent.putExtras(argRuta);
+                    startActivity(intent);
+                    finish();
 
 
                 } else if(is_sino==0){
@@ -347,11 +338,7 @@ public class StoreOpenClose extends Activity {
 
 
 
-    public void onBackPressed() {
-        super.onBackPressed();
-        this.finish();
-        overridePendingTransition(R.anim.anim_slide_in_right, R.anim.anim_slide_out_right);
-    }
+
 
     private void showpDialog() {
         if (!pDialog.isShowing())
@@ -361,6 +348,25 @@ public class StoreOpenClose extends Activity {
     private void hidepDialog() {
         if (pDialog.isShowing())
             pDialog.dismiss();
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+            //preventing default implementation previous to android.os.Build.VERSION_CODES.ECLAIR
+            //Toast.makeText(MyActivity, "No se puede volver atras, los datos ya fueron guardado, para modificar pongase en contácto con el administrador", Toast.LENGTH_LONG).show();
+            onBackPressed();
+            return true;
+        }
+        return super.onKeyDown(keyCode, event);
+    }
+    @Override
+    public void onBackPressed() {
+        Toast.makeText(MyActivity,R.string.mesaage_on_back, Toast.LENGTH_LONG).show();
+//        super.onBackPressed();
+//        this.finish();
+//
+//        overridePendingTransition(R.anim.anim_slide_in_right,R.anim.anim_slide_out_right);
     }
 
 }

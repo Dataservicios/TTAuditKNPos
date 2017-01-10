@@ -96,9 +96,6 @@ public class FragmentRutas extends Fragment {
         porcentajeAvance1 = (EditText) rootView.findViewById(R.id.etPorcentajeAvance);
         tvPDVS = (TextView) rootView.findViewById(R.id.tvPDVS);
 
-
-
-
         listView = (ListView) rootView.findViewById(R.id.list);
         adapter = new RutasAdapter(getActivity(), rutaList);
         listView.setAdapter(adapter);
@@ -109,14 +106,15 @@ public class FragmentRutas extends Fragment {
 
                 // selected item
                 String selected =((TextView)view.findViewById(R.id.tvRutaDia)).getText().toString();
-                String idRuta =((TextView)view.findViewById(R.id.tvId)).getText().toString();
+                String road_id =((TextView)view.findViewById(R.id.tvId)).getText().toString();
                 Toast toast= Toast.makeText(getActivity(), selected, Toast.LENGTH_SHORT);
                 toast.show();
                 Bundle bolsa = new Bundle();
-                bolsa.putInt("idRuta", Integer.valueOf(idRuta));
+                bolsa.putInt("road_id", Integer.valueOf(road_id));
                 bolsa.putString("fechaRuta", selected);
 
-               Intent intent = new Intent("dataservicios.com.ttauditalicorp.PUNTOSVENTA");
+               //Intent intent = new Intent("dataservicios.com.ttauditalicorp.PUNTOSVENTA");
+               Intent intent = new Intent(getActivity(),PuntosVenta.class);
                 intent.putExtras(bolsa);
                startActivity(intent);
                 //getActivity().finish();
@@ -142,12 +140,7 @@ public class FragmentRutas extends Fragment {
         //hidePDialog();
     }
 
-//    private void hidePDialog() {
-//        if (pDialog != null) {
-//            pDialog.dismiss();
-//            pDialog = null;
-//        }
-//    }
+
 
     private void showpDialog() {
         if (!pDialog.isShowing())
@@ -159,94 +152,6 @@ public class FragmentRutas extends Fragment {
             pDialog.dismiss();
     }
 
-    private void cargaPdvs(){
-
-        String url_pdv_nueva =  URL_PDVS + "?id=" + id_user;
-        showpDialog();
-        JsonObjectRequest jsonObjReq = new JsonObjectRequest( url_pdv_nueva , null,
-                new Response.Listener<JSONObject>() {
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        Log.d("Cargando PDV: ", response.toString());
-
-                        try {
-
-                            String Sdpvs = String.valueOf(response.getInt("pdvs"));
-                            String Sporcentajeavance = String.valueOf(response.getInt("porcentajeavance"));
-                            String Sauditados = String.valueOf(response.getInt("auditados"));
-                           // Log.d("eeeeeERRR", String.valueOf(response.getInt("pdvs")));
-                            pdvs1.setText(Sdpvs) ;
-                            pdvsAuditados1.setText(Sauditados);
-                            porcentajeAvance1.setText(Sporcentajeavance);
-//                             pdvs1.setText("80") ;
-//                             pdvsAuditados1.setText("10");
-//                             porcentajeAvance1.setText("25");
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-
-                        hidepDialog();
-                    }
-                }, new Response.ErrorListener() {
-
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                VolleyLog.d(TAG, "EEEError: " + error.getMessage());
-                hidepDialog();
-            }
-        });
-
-        AppController.getInstance().addToRequestQueue(jsonObjReq);
-    }
-
-    private void cargaRutasPdvs(){
-//        //        // Creando objeto Json y llenado en el lista pdvs de la semana
-//        pDialog = new ProgressDialog(getActivity());
-//        // Showing progress dialog before making http request
-//        pDialog.setMessage("Loading...");
-//        pDialog.show();
-        showpDialog();
-        String url_rutas_nueva =  URL_AUDITORIAS + "?id=" + id_user;
-        JsonArrayRequest rutaReq = new JsonArrayRequest(URL_AUDITORIAS,
-                new Response.Listener<JSONArray>() {
-                    @Override
-                    public void onResponse(JSONArray response) {
-                        Log.d(TAG, response.toString());
-
-                        // Parsing json
-                        for (int i = 0; i < response.length(); i++) {
-                            try {
-                                JSONObject obj = response.getJSONObject(i);
-                                Ruta ruta = new Ruta();
-                                ruta.setId(obj.getInt("id"));
-                                ruta.setRutaDia(obj.getString("ruta"));
-                                ruta.setPdvs(obj.getInt("pdvs"));
-                                ruta.setPorcentajeAvance(obj.getInt("porcentajeavance"));
-                                // adding movie to movies array
-                                rutaList.add(ruta);
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                            }
-                        }
-
-                        // notifying list adapter about data changes
-                        // so that it renders the list view with updated data
-                        adapter.notifyDataSetChanged();
-                        hidepDialog();
-                    }
-                }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                VolleyLog.d(TAG, "Error: " + error.getMessage());
-                hidepDialog();
-            }
-        }
-        );
-
-        AppController.getInstance().addToRequestQueue(rutaReq);
-
-
-    }
 
     private void cargaRutasAndPdvs(){
         // Creando objeto Json y llenado en el lista pdvs de la semana

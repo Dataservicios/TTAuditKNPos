@@ -122,7 +122,7 @@ public class LoginActivity extends Activity implements View.OnClickListener {
         protected void onPreExecute() {
             super.onPreExecute();
             pDialog = new ProgressDialog(LoginActivity.this);
-            pDialog.setMessage("Iniciando Sesión...");
+            pDialog.setMessage(getString(R.string.text_loading));
             pDialog.setIndeterminate(false);
             pDialog.setCancelable(false);
             pDialog.show();

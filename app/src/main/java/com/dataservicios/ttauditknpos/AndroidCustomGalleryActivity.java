@@ -40,8 +40,7 @@ public class AndroidCustomGalleryActivity extends Activity {
 
     private static final int TAKE_PICTURE = 1;
     private String mCurrentPhotoPath;
-    private static final String JPEG_FILE_PREFIX = "_Alicorp_";
-    private static final String JPEG_FILE_SUFFIX = ".jpg";
+
 
     private String url_insert_image ;
 
@@ -78,10 +77,6 @@ public class AndroidCustomGalleryActivity extends Activity {
 
 
 
-
-
-
-
         getFromSdcard();
 
         final GridView imagegrid = (GridView) findViewById(R.id.PhoneImageGrid);
@@ -110,10 +105,10 @@ public class AndroidCustomGalleryActivity extends Activity {
 
                 // Create an image file name
                 String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-                String imageFileName = String.format("%06d", Integer.parseInt(store_id))+ "_" + GlobalConstant.company_id + JPEG_FILE_PREFIX + timeStamp;
+                String imageFileName = String.format("%06d", Integer.parseInt(store_id))+ "_" + GlobalConstant.company_id + GlobalConstant.JPEG_FILE_PREFIX + timeStamp;
                 File albumF = getAlbumDir();
                 // to save picture remove comment
-                File file = new File(albumF,imageFileName+JPEG_FILE_SUFFIX);
+                File file = new File(albumF,imageFileName+GlobalConstant.JPEG_FILE_SUFFIX);
 
                 Uri photoPath = Uri.fromFile(file);
                 intent.putExtra(MediaStore.EXTRA_OUTPUT, photoPath);

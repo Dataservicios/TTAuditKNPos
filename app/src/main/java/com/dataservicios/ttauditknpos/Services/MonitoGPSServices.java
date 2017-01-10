@@ -33,7 +33,7 @@ public class MonitoGPSServices extends Service {
 
     private Context context = this;
 
-   static final int DELAY = 130000; //2 minutos de espera
+   static final int DELAY = 240000; //4 minutos de espera
     //static final int DELAY = 20000; //20 segundos
     private boolean runFlag = false;
     private Updater updater;

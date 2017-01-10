@@ -11,23 +11,35 @@ public final class GlobalConstant {
     public static  double latitude_open, longitude_open;
     public static  int global_close_audit =0;
     public static int company_id = 54;
+    public static int company_id_palmera = 47;
     public static int[] poll_id = new int[]{
-          756,	// 0 // Se encuentra Abierto el punto?  617, // 0 Se encuentra Abierto el punto?"
-          757,	// 1 // ¿Cliente permitió tomar información?  618, // 1 ¿Cliente permitió tomar información?"
-          758,	// 2 // ¿Ventana esta Trabajada? (Tiene fronterizador arriba y abajo)  619, // 2 ¿Ventana esta Trabajada? (Tiene fronterizador arriba y abajo)"
-          759,	// 3 // ¿Existe Ventana?  620, // 3 ¿Existe Ventana?"
-          760,	// 4 // ¿ La Ventana es visible ?  621, // 4 ¿ La Ventana es visible ?"
-          761,	// 5 // ¿ Como se encuentra la Ventana ?  622, // 5 ¿ Como se encuentra la Ventana ?"
-          762,	// 6 // ¿ Se encontro exhibidor ?  623, // 6 ¿ Se encontro exhibidor ?"
-          763,	// 7 // ¿ Es cliente perfecto ?  624, // 7 ¿ Es cliente perfecto ?"
-          764,	// 8 // ¿Desde cuando es cliente perfecto?  625, // 8 ¿Desde cuando es cliente perfecto?"
-          765,	// 9 // ¿Ha sido premiado por ser cliente perfecto?  626, // 9 ¿Ha sido premiado por ser cliente perfecto?"
+            771,    //0	    "Esta Abierto el local?"
+            772,    //1	    "Permitio actualizar POS"
+            773,    //2	    "Foto Voucher de inicio"
+            774,    //3	    "Fotos de POS"
+            775,    //4	    "Fotos sticker de POS"
+            776,    //5	    "Ingresar modelos de POS"
+            777,    //6	    "Ingresar numeros de terminales"
+            778,    //7	    "Foto Interior comercio"
+            779,    //8	    "Foto de voucher final"
+            780,    //9	    "Foto de constancia de instalación"
+            781,    //10	"Teléfono y contacto válido?"
+    } ;
+    public static int[] poll_id_palmera = new int[]{
+            630, // 0 Cliente vende Bloqueador en Sachet?"
+            631, // 1 Precio de venta del bloqueador"
     } ;
 
+    public static int[] audit_id = new int[]{
+            38, // 0 Cliente vende Bloqueador en Sachet?"
+    } ;
 
    // public static String albunName = "AlicorpPhoto";
     //public static String directory_images = "/Pictures/" + albunName;
     public static String directory_images = "/Pictures/" ;
     public static String type_aplication = "android";
+
+    public static final String JPEG_FILE_PREFIX = "_KNPos_";
+    public static final String JPEG_FILE_SUFFIX = ".jpg";
 }
 

@@ -9,6 +9,7 @@ import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
@@ -27,9 +28,11 @@ import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.dataservicios.ttauditknpos.Kasnet.StoreOpenClose;
 import com.dataservicios.ttauditknpos.Model.Audit;
 import com.dataservicios.ttauditknpos.SQLite.DatabaseHelper;
 import com.dataservicios.ttauditknpos.app.AppController;
+import com.dataservicios.ttauditknpos.util.AuditUtil;
 import com.dataservicios.ttauditknpos.util.GPSTracker;
 import com.dataservicios.ttauditknpos.util.GlobalConstant;
 import com.dataservicios.ttauditknpos.util.SessionManager;
@@ -47,11 +50,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
-
 
 
 /**
@@ -75,14 +76,16 @@ public class DetallePdv extends FragmentActivity {
 
     private JSONObject params,paramsCordenadas;
     private SessionManager session;
-    private String email_user, id_user, name_user;
-    private int idPDV, IdRuta, idCompany;
+    private String email_user, user_id, name_user;
+    private int idPDV, road_id, idCompany;
     private String fechaRuta;
     EditText pdvs1,pdvsAuditados1,porcentajeAvance1;
-    TextView tvStoreId,tvTienda,tvDireccion ,tvDistrito, tvReferencia , tvPDVSdelDia ; //tvLong, tvLat;
-    Button btGuardarLatLong, btCerrarAudit, btEditStore;
+    TextView tvStoreId,tvTienda,tvDireccion ,tvDistrito, tvReferencia , tvPDVSdelDia, tvTelephone,tvContact ; //tvLong, tvLat;
+    Button btGuardarLatLong, btCerrarAudit, btEditAddress , btEditTelephone;
     Activity MyActivity = (Activity) this;
 
+    Audit mAudit ;
+    GPSTracker gpsTracker;
 
     private DatabaseHelper db;
     @Override
@@ -105,11 +108,13 @@ public class DetallePdv extends FragmentActivity {
         tvReferencia = (TextView)  findViewById(R.id.tvReferencia);
         tvDistrito= (TextView)  findViewById(R.id.tvDistrito);
         tvPDVSdelDia = (TextView)  findViewById(R.id.tvPDVSdelDia);
-//        tvLong = (TextView) findViewById(R.id.tvlogitud);
-//        tvLat = (TextView) findViewById(R.id.tvLatitud);
+        tvTelephone = (TextView)  findViewById(R.id.tvTelephone);
+        tvContact = (TextView)  findViewById(R.id.tvContact);
+
         btGuardarLatLong = (Button) findViewById(R.id.btGuardarLatLong);
         btCerrarAudit = (Button) findViewById(R.id.btCerrarAuditoria);
-        btEditStore = (Button) findViewById(R.id.btEditStore);
+        btEditAddress = (Button) findViewById(R.id.btEditAddress);
+        btEditTelephone = (Button) findViewById(R.id.btEditTelephone);
         // get user data from session
         HashMap<String, String> user = session.getUserDetails();
         // name
@@ -117,13 +122,16 @@ public class DetallePdv extends FragmentActivity {
         // email
         email_user = user.get(SessionManager.KEY_EMAIL);
         // id
-        id_user = user.get(SessionManager.KEY_ID_USER);
+        user_id = user.get(SessionManager.KEY_ID_USER);
 
         db = new DatabaseHelper(getApplicationContext());
 
+        gpsTracker = new GPSTracker(MyActivity);
+
         pDialog = new ProgressDialog(this);
-        pDialog.setMessage("Cargando...");
+        pDialog.setMessage(getString(R.string.text_loading));
         pDialog.setCancelable(false);
+
 
 
         btGuardarLatLong.setOnClickListener(new View.OnClickListener() {
@@ -162,32 +170,8 @@ public class DetallePdv extends FragmentActivity {
                         String strDate = sdf.format(c.getTime());
                         GlobalConstant.fin = strDate;
 
-                        JSONObject paramsCloseAudit = new JSONObject();
-                        try {
-                            GPSTracker gpsTracker = new GPSTracker(MyActivity);
+                        new loadPoll().execute();
 
-
-                            //paramsCloseAudit.put("latitud_close", lat);
-                            paramsCloseAudit.put("latitud_close",  String.valueOf(gpsTracker.getLatitude()));
-                            //paramsCloseAudit.put("longitud_close", lon);
-                            paramsCloseAudit.put("longitud_close", String.valueOf(gpsTracker.getLongitude()));
-                            paramsCloseAudit.put("latitud_open", GlobalConstant.latitude_open);
-                            paramsCloseAudit.put("longitud_open",  GlobalConstant.latitude_open);
-                            paramsCloseAudit.put("tiempo_inicio",  GlobalConstant.inicio);
-                            paramsCloseAudit.put("tiempo_fin",  GlobalConstant.fin);
-                            paramsCloseAudit.put("tduser", id_user);
-                            paramsCloseAudit.put("id", idPDV);
-                            paramsCloseAudit.put("idruta", IdRuta);
-                            paramsCloseAudit.put("company_id", GlobalConstant.company_id);
-
-                            insertaTiemporAuditoria(paramsCloseAudit);
-
-
-                            finish();
-
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
                         dialog.dismiss();
 
                     }
@@ -209,7 +193,7 @@ public class DetallePdv extends FragmentActivity {
             }
         });
 
-        btEditStore.setOnClickListener(new View.OnClickListener() {
+        btEditAddress.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent;
@@ -217,16 +201,33 @@ public class DetallePdv extends FragmentActivity {
                 argRuta.clear();
                 //argRuta.putInt("company_id", GlobalConstant.company_id);
                 argRuta.putInt("store_id",idPDV);
-                argRuta.putString("direccion", tvDireccion.getText().toString());
-                argRuta.putString("referencia", tvReferencia.getText().toString());
+                argRuta.putString("address", tvDireccion.getText().toString());
+                argRuta.putString("reference", tvReferencia.getText().toString());
                 argRuta.putString("storeName", tvTienda.getText().toString());
 
-                intent = new Intent(MyActivity, EditStore.class);
+                intent = new Intent(MyActivity, EditAddressActivity.class);
                 intent.putExtras(argRuta);
                 startActivity(intent);
             }
         });
 
+        btEditTelephone.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent;
+                Bundle argRuta = new Bundle();
+                argRuta.clear();
+                //argRuta.putInt("company_id", GlobalConstant.company_id);
+                argRuta.putInt("store_id",idPDV);
+                argRuta.putString("contact", tvContact.getText().toString());
+                argRuta.putString("telephone", tvTelephone.getText().toString());
+
+                intent = new Intent(MyActivity, ContactoTelefonoActivity.class);
+                intent.putExtras(argRuta);
+                startActivity(intent);
+
+            }
+        });
 
 
         linearLayout = (ViewGroup) findViewById(R.id.lyControles);
@@ -235,8 +236,8 @@ public class DetallePdv extends FragmentActivity {
 
         Bundle bundle = getIntent().getExtras();
         idPDV= bundle.getInt("idPDV");
-        //IdRuta= bundle.getInt("idRuta");
-        IdRuta= bundle.getInt("rout_id");
+        //road_id= bundle.getInt("idRuta");
+        road_id= bundle.getInt("road_id");
         fechaRuta= bundle.getString("fechaRuta");
 
 
@@ -249,11 +250,11 @@ public class DetallePdv extends FragmentActivity {
 
         try {
             params.put("id", idPDV);
-            params.put("idRoute", IdRuta);
+            params.put("idRoute", road_id);
             params.put("company_id", GlobalConstant.company_id);
             //Enviando
 
-            params.put("iduser", id_user);
+            params.put("iduser", user_id);
 
             //params.put("id_pdv",idPDV);
         } catch (JSONException e) {
@@ -267,21 +268,7 @@ public class DetallePdv extends FragmentActivity {
 
 
 
-    private void mostrarPosicion(Location loc) {
-        if(loc != null)
-        {
 
-            latitude=loc.getLatitude();
-            longitude= loc.getLongitude();
-
-            Log.i("Posicion: ", String.valueOf(latitude + " - " + String.valueOf(longitude) + " - "));
-        }
-        else
-        {
-
-            Log.i("SIN Data", "No hay datos para mostrar");
-        }
-    }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -336,15 +323,18 @@ public class DetallePdv extends FragmentActivity {
                                             tvDistrito.setText(obj.getString("district"));
                                             tvReferencia.setText(obj.getString("urbanization"));
                                             tvStoreId.setText(String.valueOf(idPDV));
+                                            tvContact.setText(obj.getString("owner"));
+                                            tvTelephone.setText(obj.getString("telephone"));
                                             //tvLat.setText(obj.getString("latitude"));
                                            // tvLong.setText(obj.getString("longitude"));
+
                                             latitude= Double.valueOf(obj.getString("latitude"))  ;
                                             longitude= Double.valueOf(obj.getString("longitude"));
                                             map.clear();
                                             map.setMyLocationEnabled(true);
                                             MarkerNow = map.addMarker(new MarkerOptions().position(new LatLng(latitude, longitude)).title("Mi Ubicación")
                                                     //.snippet("Population: 4,137,400")
-                                                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_marker_alicorp)));
+                                                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_marker_knpos)));
                                             CameraPosition cameraPosition = new CameraPosition.Builder().target(new LatLng(latitude, longitude)).zoom(15).build();
                                             map.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
                                             // Establezco un listener para ver cuando cambio de posicion
@@ -413,30 +403,13 @@ public class DetallePdv extends FragmentActivity {
                                 for (int i = 0; i < agentesObjJson.length(); i++) {
                                     JSONObject obj = agentesObjJson.getJSONObject(i);
                                     // Storing each json item in variable
-                                    String idAuditoria = obj.getString("id");
+                                    String audit_id = obj.getString("id");
                                     String auditoria = obj.getString("fullname");
 
-                                    //int totalAudit = db.getCountAuditForId(Integer.valueOf(idAuditoria));
-//                                    int totalAudit = db.getCountAuditForIdForStoreId(Integer.valueOf(idAuditoria), Integer.valueOf(idPDV));
-//                                    List<Audit> audits1 = new ArrayList<Audit>();
-//                                    audits1=db.getAllAudits();
-//                                    if(totalAudit==0) {
-//                                        Audit audit = new Audit();
-//                                        audit.setId(Integer.valueOf(idAuditoria));
-//                                        audit.setName(auditoria);
-//                                        audit.setStore_id(idPDV);
-//                                        audit.setScore(0);
-//                                        db.createAudit(audit);
-//                                    }
-//
-//                                    audits1=db.getAllAudits();
-
                                     int status = obj.getInt("state");
+                                    // audit_id = 0 ;
+                                    //int audit_id = Integer.valueOf(audit_id);
 
-                                    Integer audit_id ;
-                                    audit_id = Integer.valueOf(idAuditoria);
-                                    // Solo para auditorias diferente del id 4 y 14
-                                    if( (audit_id != 4 ) && (audit_id != 15)  ){
                                             bt = new Button(MyActivity);
                                             LinearLayout ly = new LinearLayout(MyActivity);
                                             ly.setOrientation(LinearLayout.VERTICAL);
@@ -450,7 +423,6 @@ public class DetallePdv extends FragmentActivity {
                                             bt.setBackgroundColor(getResources().getColor(R.color.color_base));
                                             bt.setTextColor(getResources().getColor(R.color.counter_text_bg));
                                             bt.setText(auditoria);
-
 
                                             if(status==1) {
                                                 Drawable img = MyActivity.getResources().getDrawable( R.drawable.ic_check_on);
@@ -471,37 +443,32 @@ public class DetallePdv extends FragmentActivity {
                                                 bt.setEnabled(false);
                                             }
                                             //bt.setBackground();
-                                            bt.setId(Integer.valueOf(idAuditoria));
+                                            bt.setId(Integer.valueOf(audit_id));
                                             bt.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));
                                             bt.setOnClickListener(new View.OnClickListener() {
                                                 @Override
                                                 public void onClick(View v) {
-                                                    // Toast.makeText(getActivity(), j  , Toast.LENGTH_LONG).show();
+
                                                     Button button1 = (Button) v;
                                                     String texto = button1.getText().toString();
                                                     //Toast toast=Toast.makeText(getActivity(), selected, Toast.LENGTH_SHORT);
-                                                    Toast toast;
-                                                    toast = Toast.makeText(MyActivity, texto + ":" + button1.getId(), Toast.LENGTH_LONG);
-                                                    toast.show();
-                                                    //int idBoton = Integer.valueOf(idAuditoria);
+                                                    Toast.makeText(MyActivity, texto + ":" + button1.getId(), Toast.LENGTH_LONG).show();
+
                                                     Intent intent;
-                                                    int idAuditoria = button1.getId();
+                                                    int audit_id = button1.getId();
 
                                                     Bundle argRuta = new Bundle();
                                                     argRuta.clear();
                                                     argRuta.putInt("store_id",idPDV);
-                                                    argRuta.putInt("rout_id", IdRuta );
-                                                    argRuta.putString("fechaRuta",fechaRuta);
-                                                    argRuta.putInt("audit_id",idAuditoria);
+                                                    argRuta.putInt("road_id", road_id );
+                                                    argRuta.putInt("audit_id",audit_id);
 
+                                                    switch (audit_id) {
 
-                                                    switch (idAuditoria) {
-
-                                                        case 3:
-//                                                            intent = new Intent(MyActivity, PresenciaMaterial.class);
-//                                                            intent.putExtras(argRuta);
-//                                                            startActivity(intent);
-
+                                                        case 44:
+                                                            intent = new Intent(MyActivity, StoreOpenClose.class);
+                                                            intent.putExtras(argRuta);
+                                                            startActivity(intent);
                                                             break;
                                                         case 1:
 //                                                            intent = new Intent(MyActivity, CategoriasSOD.class);
@@ -520,7 +487,7 @@ public class DetallePdv extends FragmentActivity {
                                             });
                                             ly.addView(bt);
                                             linearLayout.addView(ly);
-                                    }
+
 
                                 }
                                 GlobalConstant.global_close_audit=0;
@@ -598,56 +565,56 @@ public class DetallePdv extends FragmentActivity {
 
     }
 
-    private void insertaTiemporAuditoria(JSONObject parametros) {
-        showpDialog();
-        JsonObjectRequest jsObjRequest = new JsonObjectRequest(Request.Method.POST , GlobalConstant.dominio + "/insertaTiempo" ,parametros,
-                new Response.Listener<JSONObject>()
-                {
-                    @Override
-                    public void onResponse(JSONObject response)
-                    {
-                        Log.d("DATAAAA", response.toString());
-                        //adapter.notifyDataSetChanged();
-                        try {
-                            //String agente = response.getString("agentes");
-                            int success =  response.getInt("success");
-                            if (success == 1) {
-//
-//                                Log.d("DATAAAA", response.toString());
-//                                Toast.makeText(MyActivity, "Se ", Toast.LENGTH_LONG).show();
-//
-//
-//                                Bundle argument = new Bundle();
-//                                argument.clear();
-//                                argument.putInt("idPDV",idPDV);
-//
-//                                Intent intent = new Intent("dataservicios.com.ttauditalicorp.PREMIACION");
-//                                intent.putExtras(argument);
-//                                startActivity(intent);
-
-                                finish();
-                            } else {
-                                Toast.makeText(MyActivity, "No se ha podido enviar la información, intentelo mas tarde ", Toast.LENGTH_LONG).show();
-                            }
-                        } catch (JSONException e) {
-                            Toast.makeText(MyActivity, "No se ha podido enviar la información, intentelo mas tarde ", Toast.LENGTH_LONG).show();
-                            e.printStackTrace();
-                        }
-                    }
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        //VolleyLog.d(TAG, "Error: " + error.getMessage());
-                        hidepDialog();
-                    }
-                }
-        );
+    class loadPoll extends AsyncTask<Void , Integer , Boolean> {
+        /**
+         * Antes de comenzar en el hilo determinado, Mostrar progresión
+         * */
+        boolean failure = false;
+        @Override
+        protected void onPreExecute() {
+            //tvCargando.setText("Cargando Product...");
+            pDialog.show();
+            super.onPreExecute();
+        }
+        @Override
+        protected Boolean doInBackground(Void... params) {
+            // TODO Auto-generated method stub
 
 
-        AppController.getInstance().addToRequestQueue(jsObjRequest);
+
+                String time_close = new SimpleDateFormat("yyyy:MM:dd HH:mm:ss").format(new Date());
+                mAudit = new Audit();
+                mAudit.setCompany_id(GlobalConstant.company_id);
+                mAudit.setStore_id(idPDV);
+                mAudit.setId(0);
+                mAudit.setRoute_id(road_id);
+                mAudit.setUser_id(Integer.valueOf(user_id));
+                mAudit.setLatitude_close(String.valueOf(gpsTracker.getLatitude()));
+                mAudit.setLongitude_close(String.valueOf(gpsTracker.getLongitude()));
+                mAudit.setLatitude_open(String.valueOf(GlobalConstant.latitude_open));
+                mAudit.setLongitude_open(String.valueOf(GlobalConstant.longitude_open));
+                mAudit.setTime_open(GlobalConstant.inicio);
+                mAudit.setTime_close(time_close);
 
 
+                if(!AuditUtil.closeAuditRoadAll(mAudit)) return false;
+
+
+            return true;
+        }
+        /**
+         * After completing background task Dismiss the progress dialog
+         * **/
+        protected void onPostExecute(Boolean result) {
+            // dismiss the dialog once product deleted
+
+            if (result){
+                    finish();
+            } else {
+                Toast.makeText(MyActivity , "No se pudo guardar la información intentelo nuevamente", Toast.LENGTH_LONG).show();
+            }
+            hidepDialog();
+        }
     }
 
 
@@ -679,11 +646,11 @@ public class DetallePdv extends FragmentActivity {
     }
     @Override
     public void onBackPressed() {
-        Toast.makeText(MyActivity, "No se puede volver atras, los datos ya fueron guardado, para modificar póngase en contácto con el administrador", Toast.LENGTH_LONG).show();
-//        super.onBackPressed();
-//        this.finish();
-//
-//        overridePendingTransition(R.anim.anim_slide_in_right,R.anim.anim_slide_out_right);
+        //Toast.makeText(MyActivity, "No se puede volver atras, los datos ya fueron guardado, para modificar póngase en contácto con el administrador", Toast.LENGTH_LONG).show();
+        super.onBackPressed();
+        this.finish();
+
+        overridePendingTransition(R.anim.anim_slide_in_right,R.anim.anim_slide_out_right);
     }
 
 }

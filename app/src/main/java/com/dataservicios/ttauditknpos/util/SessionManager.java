@@ -16,13 +16,10 @@ import java.util.HashMap;
 public class SessionManager {
     // Preferencias compartidas
     SharedPreferences pref;
-
     //Editor de preferencias compartidas
     SharedPreferences.Editor editor;
-
     // Context
     Context _context;
-
     // Modo pref compartido
     int PRIVATE_MODE = 0;
 

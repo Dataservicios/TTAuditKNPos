@@ -82,7 +82,7 @@ public class PuntosVenta extends Activity {
         tvPDVSdelDía = (TextView) findViewById(R.id.tvPDVSdelDia);
 
         Bundle bundle = getIntent().getExtras();
-        IdRuta = bundle.getInt("idRuta");
+        IdRuta = bundle.getInt("road_id");
         fechaRuta = bundle.getString("fechaRuta");
 
         tvPDVSdelDía.setText(fechaRuta);
@@ -133,10 +133,7 @@ public class PuntosVenta extends Activity {
                 Bundle argRuta = new Bundle();
                 argRuta.putInt("id", IdRuta);
 
-//
-//                Intent intent = new Intent(MyActivity, MapaRuta.class);
-//                intent.putExtras(argRuta);
-//                startActivity(intent);
+
                 try {
                     Intent intent = new Intent();
                     intent.setComponent(new ComponentName("com.dataservicios.ttauditrutas", "com.dataservicios.ttauditrutas.MapaRuta"));
@@ -195,18 +192,17 @@ public class PuntosVenta extends Activity {
                 region = ((TextView) view.findViewById(R.id.tvRegion)).getText().toString();
 
 
-
                 Toast toast = Toast.makeText(getApplicationContext(), String.valueOf(store_id), Toast.LENGTH_SHORT);
                 toast.show();
                 Bundle argPDV = new Bundle();
                 argPDV.putInt("idPDV", Integer.valueOf(store_id));
-                argPDV.putInt("idRuta", Integer.valueOf(IdRuta));
+                argPDV.putInt("road_id", Integer.valueOf(IdRuta));
                 argPDV.putString("fechaRuta", fechaRuta);
                 argPDV.putString("region", region);
                 argPDV.putString("typeBodega", typeBodega);
-                //Intent intent = new Intent("dataservicios.com.ttauditalicorp.DETALLEPDV");
-                //Intent intent = new Intent(MyActivity, TipoDex.class);
-                Intent intent = new Intent(MyActivity, StoreOpenClose.class);
+
+                Intent intent = new Intent(MyActivity, DetallePdv.class);
+                //Intent intent = new Intent(MyActivity, StoreOpenClose.class);
                 intent.putExtras(argPDV);
                 startActivity(intent);
 

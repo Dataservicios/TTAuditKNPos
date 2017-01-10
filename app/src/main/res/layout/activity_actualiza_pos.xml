@@ -13,8 +13,6 @@
         android:weightSum="1"
         android:focusable="true"
         android:focusableInTouchMode="true">
-
-
         <LinearLayout
             android:orientation="horizontal"
             android:layout_width="fill_parent"
@@ -32,7 +30,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:id="@+id/tvStock"
-                    android:text="¿ Esta Abierto el local? ?"/>
+                    android:text="¿ Permitio actualizar POS ?"/>
                 <Switch
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -68,21 +66,12 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:tag="a"
-                            android:text="Local Cerrado" />
+                            android:text="No estaba el encargado" />
 
                         <RadioButton
                             android:id="@+id/rbB"
                             android:layout_width="wrap_content"
                             android:tag="b"
-                            android:layout_height="wrap_content"
-                            android:text="Local No existe"
-                            android:enabled="true" />
-
-
-                        <RadioButton
-                            android:id="@+id/rbC"
-                            android:layout_width="wrap_content"
-                            android:tag="c"
                             android:layout_height="wrap_content"
                             android:text="Otros" />
 
@@ -101,35 +90,14 @@
                             android:id="@+id/etComent" />
                     </RadioGroup>
                 </LinearLayout>
-                <LinearLayout
-                    android:orientation="vertical"
-                    android:layout_width="fill_parent"
-                    android:layout_height="fill_parent"
-                    >
-                    <Button
-                        android:id="@+id/btPhoto"
 
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:drawableBottom="@drawable/ic_photo"
-                        android:layout_below="@+id/widget110"
-                        android:background="@android:color/transparent"
-                        android:layout_gravity="center" />
-
-                </LinearLayout>
             </LinearLayout>
         </LinearLayout>
-
-
-
-
 
         <LinearLayout
             android:orientation="horizontal"
             android:layout_width="fill_parent"
             android:layout_height="56dp">
-
-
             <Button
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -139,11 +107,5 @@
                 style="@style/BottonBase" />
 
         </LinearLayout>
-
     </LinearLayout>
-
-
-
 </ScrollView>
-
-

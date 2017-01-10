@@ -148,6 +148,47 @@
 
         </LinearLayout>
 
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:padding="5dp">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:text="Contácto: "
+                android:textSize="@dimen/general"
+                />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:text=""
+                android:id="@+id/tvContact"
+                android:textSize="@dimen/general" />
+        </LinearLayout>
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:padding="5dp">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:text="Telefono: "
+                android:textSize="@dimen/general"
+                />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:text=""
+                android:id="@+id/tvTelephone"
+                android:textSize="@dimen/general" />
+        </LinearLayout>
+
 
         <LinearLayout
             android:orientation="horizontal"
@@ -157,10 +198,19 @@
             android:layout_alignTop="@+id/mapview_detail">
 
             <Button
-                android:id="@+id/btEditStore"
+                android:id="@+id/btEditAddress"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:drawableTop="@drawable/ic_editar"
+                android:layout_below="@+id/widget110"
+                android:background="@android:color/transparent"
+                android:layout_gravity="right" />
+
+            <Button
+                android:id="@+id/btEditTelephone"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:drawableTop="@drawable/ic_phone"
                 android:layout_below="@+id/widget110"
                 android:background="@android:color/transparent"
                 android:layout_gravity="right" />
